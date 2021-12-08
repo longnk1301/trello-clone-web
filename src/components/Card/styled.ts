@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 export const ImageStyled = styled.img(() => ({
   width: '100%',
@@ -9,4 +9,10 @@ export const ImageStyled = styled.img(() => ({
 export const CardTitleStyled = styled(Typography)(() => ({
   fontSize: 16,
   fontWeight: 400,
+}));
+
+export const CardStyled = styled(Box)(() => ({
+  '&:hover': {
+    cursor: 'pointer',
+  },
 }));

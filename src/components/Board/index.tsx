@@ -7,6 +7,7 @@ import { IBoard, IColumn, initialData } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
 import { isEmpty } from 'lodash';
 import { mapOrder } from 'src/utils';
+import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
@@ -29,23 +30,40 @@ export const Board = () => {
     );
   }
 
+  const onColumnDrop = (dropResult: DropResult) => {};
+
   return (
     <Box display={'flex'} flex={1} overflow={'auto'}>
-      {columns?.map((column) => (
-        <Box
-          key={column?.id}
-          m={2}
-          p={2}
-          maxWidth={'350px'}
-          minWidth={'350px'}
-          borderRadius={2}
-          bgcolor={colors.boardColor}
-          overflow={'auto'}
-        >
-          <BoardTitle>{column?.title}</BoardTitle>
-          <CardList column={column} />
-        </Box>
-      ))}
+      <Container
+        orientation="horizontal"
+        onDrop={onColumnDrop}
+        getChildPayload={(index) => columns[index]}
+        dragHandleSelector=".column-drag-handle"
+        dropPlaceholder={{
+          animationDuration: 150,
+          showOnTop: true,
+          className: 'cards-drop-preview',
+        }}
+      >
+        {columns?.map((column) => (
+          <Draggable key={column?.id}>
+            <Box
+              m={2}
+              pl={2}
+              pr={2}
+              pb={2}
+              maxWidth={'350px'}
+              minWidth={'350px'}
+              borderRadius={2}
+              bgcolor={colors.boardColor}
+              overflow={'auto'}
+            >
+              <BoardTitle className="column-drag-handle">{column?.title}</BoardTitle>
+              <CardList column={column} />
+            </Box>
+          </Draggable>
+        ))}
+      </Container>
     </Box>
   );
 };
