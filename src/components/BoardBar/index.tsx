@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { TitleStyled } from 'src/common/styled';

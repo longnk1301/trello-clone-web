@@ -10,6 +10,10 @@
     "react/jsx-no-bind": "off",
     "react/jsx-no-useless-fragment": "error",
     "react/jsx-fragments": ["error", "syntax"],
+    "no-console": 1,
+    "no-unused-vars": 1,
+    "no-trailing-spaces": 1,
+    "no-multi-spaces": 1,
     "react/self-closing-comp": [
       "error",
       {

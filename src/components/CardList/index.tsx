@@ -15,7 +15,7 @@ export const CardList = ({ column }: ICardListProps) => {
   return (
     <Box>
       {cards?.map((card) => (
-        <Card card={card} />
+        <Card key={card?.id} card={card} />
       ))}
       <AddTaskText>Add another card</AddTaskText>
     </Box>

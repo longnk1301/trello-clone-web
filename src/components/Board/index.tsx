@@ -33,6 +33,7 @@ export const Board = () => {
     <Box display={'flex'} flex={1} overflow={'auto'}>
       {columns?.map((column) => (
         <Box
+          key={column?.id}
           m={2}
           p={2}
           maxWidth={'350px'}
