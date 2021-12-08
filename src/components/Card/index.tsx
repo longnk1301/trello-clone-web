@@ -8,7 +8,7 @@ interface ICard {
 
 export const Card = ({ card }: ICard) => {
   return (
-    <Box mt={2} p={1} bgcolor={colors.textColor}>
+    <Box mt={2} p={1} bgcolor={colors.textColor} borderRadius={1}>
       {card.title}
     </Box>
   );

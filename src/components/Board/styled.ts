@@ -8,6 +8,7 @@ export const BoardTitle = styled(Typography)(() => ({
 
 export const ImageStyled = styled.img(() => ({
   width: '100%',
+  borderRadius: '2%',
 }));
 
 export const AddTaskText = styled(Typography)(() => ({
