@@ -1,0 +1,21 @@
+{
+  "root": true,
+  "extends": ["react-app", "react-app/jest"],
+  "plugins": ["prettier", "react-hooks", "import", "jsx-a11y"],
+  "rules": {
+    "prettier/prettier": "error",
+    "no-multiple-empty-lines": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-no-bind": "off",
+    "react/jsx-no-useless-fragment": "error",
+    "react/jsx-fragments": ["error", "syntax"],
+    "react/self-closing-comp": [
+      "error",
+      {
+        "component": true,
+        "html": true
+      }
+    ]
+  }
+}
