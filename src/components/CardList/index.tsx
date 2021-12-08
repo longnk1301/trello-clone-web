@@ -1,28 +1,20 @@
-import { Box } from '@mui/material';
 import React from 'react';
-import { colors } from 'src/common/colors';
+import { Box } from '@mui/material';
+import { IColumn } from 'src/common/initialData';
+import { mapOrder } from 'src/utils';
 import { Card } from '..';
-import { AddTaskText } from '../Board/styled';
+import { AddTaskText } from './styled';
 
-export const cards = [
-  {
-    title: 'Card 1',
-  },
-  {
-    title: 'Card 2',
-  },
-  {
-    title: 'Card 3',
-  },
-  {
-    title: 'Card 4',
-  },
-];
+interface ICardListProps {
+  column: IColumn;
+}
 
-export const CardList = () => {
+export const CardList = ({ column }: ICardListProps) => {
+  const cards = mapOrder(column.cards, column.cardOrder, 'id');
+
   return (
     <Box>
-      {cards.map((card) => (
+      {cards?.map((card) => (
         <Card card={card} />
       ))}
       <AddTaskText>Add another card</AddTaskText>
