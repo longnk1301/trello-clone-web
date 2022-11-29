@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { CardList } from '..';
 import { BoardTitle } from './styled';
 import { IBoard, IColumn, initialData } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
 import { isEmpty } from 'lodash';
-import { mapOrder } from 'src/utils';
+import { mapOrder, applyDrag, filterDropResult } from 'src/utils';
 import { Container, Draggable, DropResult } from 'react-smooth-dnd';
+import { AddTaskText } from '../CardList/styled';
+import AddIcon from '@mui/icons-material/Add';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
@@ -17,8 +19,9 @@ export const Board = () => {
     const response = initialData.boards.find((board) => board.id === 'board-1');
     if (response) {
       setBoard(response);
-
-      setColumns(mapOrder(response.columns, response.columnOrder, 'id'));
+      if (response.columns && response.columnOrder) {
+        setColumns(mapOrder(response.columns, response.columnOrder, 'id'));
+      }
     }
   }, []);
 
@@ -30,7 +33,31 @@ export const Board = () => {
     );
   }
 
-  const onColumnDrop = (dropResult: DropResult) => {};
+  const onColumnDrop = (dropResult: DropResult) => {
+    let newColumns = [...columns];
+    newColumns = applyDrag(newColumns, dropResult);
+
+    let newBoard = { ...board };
+    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columns = newColumns;
+
+    setColumns(newColumns);
+    setBoard(newBoard);
+  };
+
+  const onCardDrop = (columnId: string, dropResult: DropResult) => {
+    if (filterDropResult(dropResult)) {
+      let newColumns = [...columns];
+      let currentColumn = newColumns.find((c) => c.id === columnId);
+
+      if (currentColumn) {
+        currentColumn.cards = applyDrag(currentColumn.cards, dropResult);
+        currentColumn.cardOrder = currentColumn.cards.map((i) => i.id);
+      }
+
+      setColumns(newColumns);
+    }
+  };
 
   return (
     <Box display={'flex'} flex={1} overflow={'auto'}>
@@ -59,10 +86,16 @@ export const Board = () => {
               overflow={'auto'}
             >
               <BoardTitle className="column-drag-handle">{column?.title}</BoardTitle>
-              <CardList column={column} />
+              <CardList column={column} onCardDrop={onCardDrop} />
             </Box>
           </Draggable>
         ))}
+        <Box mt={2} minWidth={'350px'} bgcolor={colors.boardColor} borderRadius={2}>
+          <Button variant="text" color="info" fullWidth>
+            <AddIcon />
+            <AddTaskText>Add new column</AddTaskText>
+          </Button>
+        </Box>
       </Container>
     </Box>
   );

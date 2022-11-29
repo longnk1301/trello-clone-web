@@ -5,4 +5,5 @@ export const AddTaskText = styled(Typography)(() => ({
   margin: '8px 0px',
   fontSize: 14,
   fontWeight: 400,
+  textTransform: 'capitalize',
 }));
