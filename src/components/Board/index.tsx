@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { CardList } from '..';
-import { BoardTitle } from './styled';
 import { IBoard, IColumn, initialData } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
 import { isEmpty } from 'lodash';
@@ -10,12 +9,13 @@ import { mapOrder, applyDrag, filterDropResult } from 'src/utils';
 import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import { AddTaskText } from '../CardList/styled';
 import AddIcon from '@mui/icons-material/Add';
+import { ColumHeader } from '../ColumnHeader';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
   const [columns, setColumns] = useState<IColumn[]>([]);
-  const [isOpenAddNewColumn, setIsOpenAddNewColumn] = useState<boolean>(false);
   const [columnNameValue, setColumnNameValue] = useState<string>('');
+  const [isOpenAddNewColumn, setIsOpenAddNewColumn] = useState<boolean>(false);
 
   useEffect(() => {
     const response = initialData.boards.find((board) => board.id === 'board-1');
@@ -91,6 +91,32 @@ export const Board = () => {
     setColumnNameValue(e.target.value);
   };
 
+  const onSaveNewTitleColumn = (columnId: string, newTitle: string) => {
+    const newColumns = [...columns];
+    let findColumnUpdated = newColumns.find((column) => column.id === columnId);
+    if (findColumnUpdated) {
+      findColumnUpdated.title = newTitle;
+    }
+
+    let newBoard = { ...board };
+    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columns = newColumns;
+
+    setColumns(newColumns);
+    setBoard(newBoard);
+  };
+
+  const onDeleteColumn = (columnId: string) => {
+    const newColumns = columns.filter((column) => column.id !== columnId);
+
+    let newBoard = { ...board };
+    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columns = newColumns;
+
+    setColumns(newColumns);
+    setBoard(newBoard);
+  };
+
   return (
     <Box display={'flex'} flex={1} overflow={'auto'}>
       <Container
@@ -117,7 +143,9 @@ export const Board = () => {
               bgcolor={colors.boardColor}
               overflow={'auto'}
             >
-              <BoardTitle className="column-drag-handle">{column?.title}</BoardTitle>
+              <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
+                <ColumHeader column={column} onSaveNewTitle={onSaveNewTitleColumn} onDeleteColumn={onDeleteColumn} />
+              </Box>
               <CardList column={column} onCardDrop={onCardDrop} />
             </Box>
           </Draggable>

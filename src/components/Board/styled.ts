@@ -5,7 +5,6 @@ import { colors } from 'src/common/colors';
 export const BoardTitle = styled(Typography)(() => ({
   fontSize: 16,
   fontWeight: 700,
-  paddingTop: 16,
   '&:hover': {
     cursor: 'pointer',
   },
