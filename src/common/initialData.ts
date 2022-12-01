@@ -3,9 +3,9 @@ export interface IDataList {
 }
 
 export interface IBoard {
-  id: string;
-  columnOrder: string[];
-  columns: IColumn[];
+  id?: string;
+  columnOrder?: string[];
+  columns?: IColumn[];
 }
 
 export interface IColumn {
