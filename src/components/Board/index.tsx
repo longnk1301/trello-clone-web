@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { CardList } from '..';
 import { BoardTitle } from './styled';
@@ -14,6 +14,8 @@ import AddIcon from '@mui/icons-material/Add';
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
   const [columns, setColumns] = useState<IColumn[]>([]);
+  const [isOpenAddNewColumn, setIsOpenAddNewColumn] = useState<boolean>(false);
+  const [columnNameValue, setColumnNameValue] = useState<string>('');
 
   useEffect(() => {
     const response = initialData.boards.find((board) => board.id === 'board-1');
@@ -59,6 +61,36 @@ export const Board = () => {
     }
   };
 
+  const onToggleAddNewColumn = () => {
+    setIsOpenAddNewColumn(!isOpenAddNewColumn);
+    setColumnNameValue('');
+  };
+
+  const onAddNewColumn = () => {
+    const params: IColumn = {
+      id: Math.random().toString(36).substring(2, 5),
+      boardId: board?.id ?? '',
+      title: columnNameValue.trim() ?? '',
+      cardOrder: [],
+      cards: [],
+    };
+
+    let newColumns = [...columns];
+    newColumns.push(params);
+
+    let newBoard = { ...board };
+    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columns = newColumns;
+
+    setColumns(newColumns);
+    setBoard(newBoard);
+    onToggleAddNewColumn();
+  };
+
+  const onChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    setColumnNameValue(e.target.value);
+  };
+
   return (
     <Box display={'flex'} flex={1} overflow={'auto'}>
       <Container
@@ -90,12 +122,30 @@ export const Board = () => {
             </Box>
           </Draggable>
         ))}
-        <Box mt={2} minWidth={'350px'} bgcolor={colors.boardColor} borderRadius={2}>
-          <Button variant="text" color="info" fullWidth>
-            <AddIcon />
-            <AddTaskText>Add new column</AddTaskText>
-          </Button>
-        </Box>
+        {!isOpenAddNewColumn ? (
+          <Box mt={2} mr={2} minWidth={'350px'} bgcolor={colors.boardColor} borderRadius={2}>
+            <Button variant="text" color="info" fullWidth onClick={onToggleAddNewColumn}>
+              <AddIcon />
+              <AddTaskText>Add new column</AddTaskText>
+            </Button>
+          </Box>
+        ) : (
+          <Box mt={2} mr={2} p={2} minWidth={'350px'} bgcolor={colors.boardColor} borderRadius={2}>
+            <TextField
+              fullWidth
+              id="add-column-name"
+              label="Column name"
+              variant="outlined"
+              onChange={onChangeColumnName}
+              value={columnNameValue}
+              autoFocus
+            />
+            <Button variant="text" color="info" onClick={onAddNewColumn} disabled={columnNameValue === ''}>
+              <AddIcon />
+              <AddTaskText>Add column</AddTaskText>
+            </Button>
+          </Box>
+        )}
       </Container>
     </Box>
   );
