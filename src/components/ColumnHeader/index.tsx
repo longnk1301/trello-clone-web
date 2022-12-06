@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, List, ListItem, ListItemButton, ListItemText, Popover, TextField } from '@mui/material';
+import { Box, Button, List, ListItem, ListItemButton, ListItemText, Popover, TextField } from '@mui/material';
 import { BoardTitle } from '../Board/styled';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { IColumn } from 'src/common/initialData';
@@ -26,7 +26,7 @@ export const ColumHeader = ({ column, onSaveNewTitle, onDeleteColumn }: IColumnH
   const open = Boolean(anchorEl);
   const id = open ? 'more-action' : undefined;
 
-  const onEditColumnTitle = (column: IColumn) => {
+  const onEditColumnTitle = () => {
     handleClose();
     setIsEditTitleColumn(!isEditTitleColumn);
   };
@@ -58,9 +58,12 @@ export const ColumHeader = ({ column, onSaveNewTitle, onDeleteColumn }: IColumnH
           onChange={onChangeColumnName}
           value={titleColumn}
           onBlur={saveNewTitle}
+          autoFocus
         />
       ) : (
-        <BoardTitle className="column-drag-handle">{column?.title}</BoardTitle>
+        <Box onClick={onEditColumnTitle}>
+          <BoardTitle className="column-drag-handle">{column?.title}</BoardTitle>
+        </Box>
       )}
 
       <Button aria-describedby={id} onClick={handleClick}>
@@ -77,11 +80,6 @@ export const ColumHeader = ({ column, onSaveNewTitle, onDeleteColumn }: IColumnH
         }}
       >
         <List>
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => onEditColumnTitle(column)}>
-              <ListItemText primary="Edit title" />
-            </ListItemButton>
-          </ListItem>
           <ListItem disablePadding>
             <ListItemButton onClick={handleModalConfirmDelete}>
               <ListItemText primary="Delete column" />

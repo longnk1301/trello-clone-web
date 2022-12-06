@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { CardList } from '..';
-import { IBoard, IColumn, initialData } from 'src/common/initialData';
+import { IBoard, ICard, IColumn, initialData } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
 import { isEmpty } from 'lodash';
 import { mapOrder, applyDrag, filterDropResult } from 'src/utils';
@@ -117,6 +117,32 @@ export const Board = () => {
     setBoard(newBoard);
   };
 
+  const onAddNewCard = (columnId: string, value: string) => {
+    const params: ICard = {
+      id: Math.random().toString(36).substring(2, 5),
+      boardId: board?.id ?? '',
+      columnId,
+      title: value,
+      cover: null,
+    };
+    const newColumns = [...columns];
+    const findColumn = newColumns.find((column) => column.id === columnId);
+
+    if (findColumn) {
+      const indexOfColumnWillAddCard = newColumns.indexOf(findColumn);
+
+      newColumns[indexOfColumnWillAddCard].cards.push(params);
+      newColumns[indexOfColumnWillAddCard].cardOrder.push(params.id);
+
+      const newBoard = { ...board };
+      newBoard.columnOrder = newColumns.map((c) => c.id);
+      newBoard.columns = newColumns;
+
+      setColumns(newColumns);
+      setBoard(newBoard);
+    }
+  };
+
   return (
     <Box display={'flex'} flex={1} overflow={'auto'}>
       <Container
@@ -146,7 +172,7 @@ export const Board = () => {
               <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
                 <ColumHeader column={column} onSaveNewTitle={onSaveNewTitleColumn} onDeleteColumn={onDeleteColumn} />
               </Box>
-              <CardList column={column} onCardDrop={onCardDrop} />
+              <CardList column={column} onCardDrop={onCardDrop} onAddNewCard={onAddNewCard} />
             </Box>
           </Draggable>
         ))}

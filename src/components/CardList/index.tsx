@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button, TextField } from '@mui/material';
 import { IColumn } from 'src/common/initialData';
 import { mapOrder } from 'src/utils';
 import { Card } from '..';
@@ -10,10 +10,31 @@ import AddIcon from '@mui/icons-material/Add';
 interface ICardListProps {
   column: IColumn;
   onCardDrop: (columnId: string, dropResult: DropResult) => void;
+  onAddNewCard: (columnId: string, value: string) => void;
 }
 
-export const CardList = ({ column, onCardDrop }: ICardListProps) => {
+export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) => {
+  const [isDisplayInput, setIsDisplayInput] = useState<boolean>(false);
+  const [txtNewCard, setTxtNewCard] = useState<string>('');
   const cards = mapOrder(column.cards, column.cardOrder, 'id');
+
+  const onHandleAddAnotherCard = () => {
+    setIsDisplayInput(!isDisplayInput);
+    setTxtNewCard('');
+  };
+
+  const onChangeCardName = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    if (e.target.value) {
+      setTxtNewCard(e.target.value);
+    }
+  };
+
+  const saveNewCard = () => {
+    if (txtNewCard !== '') {
+      onAddNewCard(column.id, txtNewCard);
+    }
+    onHandleAddAnotherCard();
+  };
 
   return (
     <Box>
@@ -36,10 +57,25 @@ export const CardList = ({ column, onCardDrop }: ICardListProps) => {
         ))}
       </Container>
       <Box mt={2}>
-        <Button variant="text" color="info">
-          <AddIcon />
-          <AddTaskText>Add another card</AddTaskText>
-        </Button>
+        {isDisplayInput ? (
+          <Box>
+            <TextField
+              fullWidth
+              id="add-card-name"
+              label="Card name"
+              variant="outlined"
+              onChange={onChangeCardName}
+              value={txtNewCard}
+              onBlur={saveNewCard}
+              autoFocus
+            />
+          </Box>
+        ) : (
+          <Button variant="text" color="info" onClick={onHandleAddAnotherCard}>
+            <AddIcon />
+            <AddTaskText>Add another card</AddTaskText>
+          </Button>
+        )}
       </Box>
     </Box>
   );
