@@ -6,6 +6,7 @@ export interface IBoard {
   _id?: string;
   columnOrder?: string[];
   columns?: IColumn[];
+  _destroy?: boolean;
 }
 
 export interface IColumn {
@@ -14,6 +15,7 @@ export interface IColumn {
   title: string;
   cardOrder: string[];
   cards: ICard[];
+  _destroy?: boolean;
 }
 
 export interface ICard {
@@ -22,6 +24,7 @@ export interface ICard {
   columnId: string;
   title: string;
   cover: string | null;
+  _destroy?: boolean;
 }
 
 export interface IColumnPayload {
@@ -30,7 +33,8 @@ export interface IColumnPayload {
 }
 
 export interface IUploadColumnPayload {
-  title: string;
+  title?: string;
+  _destroy?: boolean;
 }
 
 export const initialData: IDataList = {

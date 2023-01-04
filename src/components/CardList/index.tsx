@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
-import { IColumn } from 'src/common/initialData';
+import { ICard, IColumn } from 'src/common/initialData';
 import { mapOrder } from 'src/utils';
 import { Card } from '..';
 import { AddTaskText } from './styled';
@@ -19,7 +19,9 @@ export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) =
 
   let cards = [];
   if (column.cards) {
-    cards = mapOrder(column.cards, column.cardOrder, '_id');
+    const filterActiveCards = column.cards.filter((card: ICard) => !card._destroy);
+
+    cards = mapOrder(filterActiveCards, column.cardOrder, '_id');
   }
 
   const onHandleAddAnotherCard = () => {

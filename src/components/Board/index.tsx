@@ -22,10 +22,11 @@ export const Board = () => {
     const boardId = '63b3a61a48e2f240a27679a5';
     const response = await fetchBoard(boardId);
 
-    if (response) {
+    if (response && !response._destroy) {
       setBoard(response);
       if (response.columns && response.columnOrder) {
-        setColumns(mapOrder(response.columns, response.columnOrder, 'id'));
+        const filterActiveColumns = response.columns.filter((column: IColumn) => !column._destroy);
+        setColumns(mapOrder(filterActiveColumns, response.columnOrder, '_id'));
       }
     }
   };
@@ -116,7 +117,7 @@ export const Board = () => {
     await updateColumn(columnId, { title: newTitle });
   };
 
-  const onDeleteColumn = (columnId: string) => {
+  const onDeleteColumn = async (columnId: string) => {
     const newColumns = columns.filter((column) => column._id !== columnId);
 
     let newBoard = { ...board };
@@ -125,6 +126,8 @@ export const Board = () => {
 
     setColumns(newColumns);
     setBoard(newBoard);
+
+    await updateColumn(columnId, { _destroy: true });
   };
 
   const onAddNewCard = (columnId: string, value: string) => {
