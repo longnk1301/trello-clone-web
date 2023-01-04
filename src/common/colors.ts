@@ -1,7 +1,7 @@
 export const colors = {
-  backgroundColor: '#C0BCB4',
-  appBarColor: '#1A1917',
-  boardBarColor: '#8D8C8A',
+  backgroundColor: '#21d4fc',
+  appBarColor: '#005272',
+  boardBarColor: '#0075a3',
   textColor: '#ffffff',
   boardColor: '#eeeeee',
 };

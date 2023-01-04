@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { CardList } from '..';
-import { IBoard, ICard, IColumn, initialData } from 'src/common/initialData';
+import { IBoard, ICard, IColumn } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
 import { isEmpty } from 'lodash';
 import { mapOrder, applyDrag, filterDropResult } from 'src/utils';
@@ -10,6 +10,7 @@ import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import { AddTaskText } from '../CardList/styled';
 import AddIcon from '@mui/icons-material/Add';
 import { ColumHeader } from '../ColumnHeader';
+import { fetchBoard } from 'src/services/TrelloService';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
@@ -17,14 +18,20 @@ export const Board = () => {
   const [columnNameValue, setColumnNameValue] = useState<string>('');
   const [isOpenAddNewColumn, setIsOpenAddNewColumn] = useState<boolean>(false);
 
-  useEffect(() => {
-    const response = initialData.boards.find((board) => board.id === 'board-1');
+  const getBoard = async () => {
+    const boardId = '63b3a61a48e2f240a27679a5';
+    const response = await fetchBoard(boardId);
+
     if (response) {
       setBoard(response);
       if (response.columns && response.columnOrder) {
         setColumns(mapOrder(response.columns, response.columnOrder, 'id'));
       }
     }
+  };
+
+  useEffect(() => {
+    getBoard();
   }, []);
 
   if (isEmpty(board)) {
@@ -40,7 +47,7 @@ export const Board = () => {
     newColumns = applyDrag(newColumns, dropResult);
 
     let newBoard = { ...board };
-    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columnOrder = newColumns.map((c) => c._id);
     newBoard.columns = newColumns;
 
     setColumns(newColumns);
@@ -50,11 +57,11 @@ export const Board = () => {
   const onCardDrop = (columnId: string, dropResult: DropResult) => {
     if (filterDropResult(dropResult)) {
       let newColumns = [...columns];
-      let currentColumn = newColumns.find((c) => c.id === columnId);
+      let currentColumn = newColumns.find((c) => c._id === columnId);
 
       if (currentColumn) {
         currentColumn.cards = applyDrag(currentColumn.cards, dropResult);
-        currentColumn.cardOrder = currentColumn.cards.map((i) => i.id);
+        currentColumn.cardOrder = currentColumn.cards.map((i) => i._id);
       }
 
       setColumns(newColumns);
@@ -68,8 +75,8 @@ export const Board = () => {
 
   const onAddNewColumn = () => {
     const params: IColumn = {
-      id: Math.random().toString(36).substring(2, 5),
-      boardId: board?.id ?? '',
+      _id: Math.random().toString(36).substring(2, 5),
+      boardId: board?._id ?? '',
       title: columnNameValue.trim() ?? '',
       cardOrder: [],
       cards: [],
@@ -79,7 +86,7 @@ export const Board = () => {
     newColumns.push(params);
 
     let newBoard = { ...board };
-    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columnOrder = newColumns.map((c) => c._id);
     newBoard.columns = newColumns;
 
     setColumns(newColumns);
@@ -93,13 +100,13 @@ export const Board = () => {
 
   const onSaveNewTitleColumn = (columnId: string, newTitle: string) => {
     const newColumns = [...columns];
-    let findColumnUpdated = newColumns.find((column) => column.id === columnId);
+    let findColumnUpdated = newColumns.find((column) => column._id === columnId);
     if (findColumnUpdated) {
       findColumnUpdated.title = newTitle;
     }
 
     let newBoard = { ...board };
-    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columnOrder = newColumns.map((c) => c._id);
     newBoard.columns = newColumns;
 
     setColumns(newColumns);
@@ -107,10 +114,10 @@ export const Board = () => {
   };
 
   const onDeleteColumn = (columnId: string) => {
-    const newColumns = columns.filter((column) => column.id !== columnId);
+    const newColumns = columns.filter((column) => column._id !== columnId);
 
     let newBoard = { ...board };
-    newBoard.columnOrder = newColumns.map((c) => c.id);
+    newBoard.columnOrder = newColumns.map((c) => c._id);
     newBoard.columns = newColumns;
 
     setColumns(newColumns);
@@ -119,23 +126,23 @@ export const Board = () => {
 
   const onAddNewCard = (columnId: string, value: string) => {
     const params: ICard = {
-      id: Math.random().toString(36).substring(2, 5),
-      boardId: board?.id ?? '',
+      _id: Math.random().toString(36).substring(2, 5),
+      boardId: board?._id ?? '',
       columnId,
       title: value,
       cover: null,
     };
     const newColumns = [...columns];
-    const findColumn = newColumns.find((column) => column.id === columnId);
+    const findColumn = newColumns.find((column) => column._id === columnId);
 
     if (findColumn) {
       const indexOfColumnWillAddCard = newColumns.indexOf(findColumn);
 
       newColumns[indexOfColumnWillAddCard].cards.push(params);
-      newColumns[indexOfColumnWillAddCard].cardOrder.push(params.id);
+      newColumns[indexOfColumnWillAddCard].cardOrder.push(params._id);
 
       const newBoard = { ...board };
-      newBoard.columnOrder = newColumns.map((c) => c.id);
+      newBoard.columnOrder = newColumns.map((c) => c._id);
       newBoard.columns = newColumns;
 
       setColumns(newColumns);
@@ -157,7 +164,7 @@ export const Board = () => {
         }}
       >
         {columns?.map((column) => (
-          <Draggable key={column?.id}>
+          <Draggable key={column?._id}>
             <Box
               m={2}
               pl={2}

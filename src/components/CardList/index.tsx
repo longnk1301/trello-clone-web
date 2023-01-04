@@ -31,7 +31,7 @@ export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) =
 
   const saveNewCard = () => {
     if (txtNewCard !== '') {
-      onAddNewCard(column.id, txtNewCard);
+      onAddNewCard(column._id, txtNewCard);
     }
     onHandleAddAnotherCard();
   };
@@ -40,7 +40,7 @@ export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) =
     <Box>
       <Container
         groupName="col"
-        onDrop={(dropResult) => onCardDrop(column.id, dropResult)}
+        onDrop={(dropResult) => onCardDrop(column._id, dropResult)}
         getChildPayload={(index) => column.cards[index]}
         dragClass="card-ghost"
         dropClass="card-ghost-drop"
@@ -51,8 +51,8 @@ export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) =
         }}
       >
         {cards?.map((card) => (
-          <Draggable key={card.id}>
-            <Card key={card?.id} card={card} />
+          <Draggable key={card._id}>
+            <Card key={card?._id} card={card} />
           </Draggable>
         ))}
       </Container>

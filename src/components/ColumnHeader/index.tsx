@@ -33,7 +33,7 @@ export const ColumHeader = ({ column, onSaveNewTitle, onDeleteColumn }: IColumnH
 
   const handleModalConfirmDelete = () => {
     handleClose();
-    onDeleteColumn(column.id);
+    onDeleteColumn(column._id);
   };
 
   const onChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -43,7 +43,7 @@ export const ColumHeader = ({ column, onSaveNewTitle, onDeleteColumn }: IColumnH
   };
 
   const saveNewTitle = () => {
-    onSaveNewTitle(column.id, titleColumn);
+    onSaveNewTitle(column._id, titleColumn);
     setIsEditTitleColumn(!isEditTitleColumn);
   };
 
