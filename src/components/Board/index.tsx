@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { colors } from 'src/common/colors';
 import { CardList } from '..';
-import { IBoard, ICard, IColumn } from 'src/common/initialData';
+import { IBoard, ICard, IColumn, IColumnPayload } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
 import { isEmpty } from 'lodash';
 import { mapOrder, applyDrag, filterDropResult } from 'src/utils';
@@ -10,7 +10,7 @@ import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import { AddTaskText } from '../CardList/styled';
 import AddIcon from '@mui/icons-material/Add';
 import { ColumHeader } from '../ColumnHeader';
-import { fetchBoard } from 'src/services/TrelloService';
+import { fetchBoard, createColumn } from 'src/services/TrelloService';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
@@ -73,25 +73,26 @@ export const Board = () => {
     setColumnNameValue('');
   };
 
-  const onAddNewColumn = () => {
-    const params: IColumn = {
-      _id: Math.random().toString(36).substring(2, 5),
+  const onAddNewColumn = async () => {
+    const params: IColumnPayload = {
       boardId: board?._id ?? '',
       title: columnNameValue.trim() ?? '',
-      cardOrder: [],
-      cards: [],
     };
 
-    let newColumns = [...columns];
-    newColumns.push(params);
+    const response = await createColumn(params);
 
-    let newBoard = { ...board };
-    newBoard.columnOrder = newColumns.map((c) => c._id);
-    newBoard.columns = newColumns;
+    if (response) {
+      let newColumns = [...columns];
+      newColumns.push(response);
 
-    setColumns(newColumns);
-    setBoard(newBoard);
-    onToggleAddNewColumn();
+      let newBoard = { ...board };
+      newBoard.columnOrder = newColumns.map((c) => c._id);
+      newBoard.columns = newColumns;
+
+      setColumns(newColumns);
+      setBoard(newBoard);
+      onToggleAddNewColumn();
+    }
   };
 
   const onChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {

@@ -16,7 +16,11 @@ interface ICardListProps {
 export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) => {
   const [isDisplayInput, setIsDisplayInput] = useState<boolean>(false);
   const [txtNewCard, setTxtNewCard] = useState<string>('');
-  const cards = mapOrder(column.cards, column.cardOrder, 'id');
+
+  let cards = [];
+  if (column.cards) {
+    cards = mapOrder(column.cards, column.cardOrder, '_id');
+  }
 
   const onHandleAddAnotherCard = () => {
     setIsDisplayInput(!isDisplayInput);

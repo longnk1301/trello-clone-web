@@ -24,6 +24,11 @@ export interface ICard {
   cover: string | null;
 }
 
+export interface IColumnPayload {
+  boardId: string;
+  title: string;
+}
+
 export const initialData: IDataList = {
   boards: [
     {
