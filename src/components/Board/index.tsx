@@ -10,7 +10,7 @@ import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import { AddTaskText } from '../CardList/styled';
 import AddIcon from '@mui/icons-material/Add';
 import { ColumHeader } from '../ColumnHeader';
-import { fetchBoard, createColumn } from 'src/services/TrelloService';
+import { fetchBoard, createColumn, updateColumn } from 'src/services/TrelloService';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>();
@@ -99,7 +99,7 @@ export const Board = () => {
     setColumnNameValue(e.target.value);
   };
 
-  const onSaveNewTitleColumn = (columnId: string, newTitle: string) => {
+  const onSaveNewTitleColumn = async (columnId: string, newTitle: string) => {
     const newColumns = [...columns];
     let findColumnUpdated = newColumns.find((column) => column._id === columnId);
     if (findColumnUpdated) {
@@ -112,6 +112,8 @@ export const Board = () => {
 
     setColumns(newColumns);
     setBoard(newBoard);
+
+    await updateColumn(columnId, { title: newTitle });
   };
 
   const onDeleteColumn = (columnId: string) => {

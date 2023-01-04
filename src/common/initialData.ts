@@ -29,6 +29,10 @@ export interface IColumnPayload {
   title: string;
 }
 
+export interface IUploadColumnPayload {
+  title: string;
+}
+
 export const initialData: IDataList = {
   boards: [
     {
