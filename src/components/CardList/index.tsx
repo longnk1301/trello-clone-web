@@ -6,6 +6,7 @@ import { Card } from '..';
 import { AddTaskText } from './styled';
 import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import AddIcon from '@mui/icons-material/Add';
+import { createCard } from 'src/services/TrelloService';
 
 interface ICardListProps {
   column: IColumn;
@@ -35,11 +36,13 @@ export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) =
     }
   };
 
-  const saveNewCard = () => {
+  const saveNewCard = async () => {
     if (txtNewCard !== '') {
       onAddNewCard(column._id, txtNewCard);
     }
     onHandleAddAnotherCard();
+
+    await createCard({ boardId: column.boardId, columnId: column._id, title: txtNewCard });
   };
 
   return (
