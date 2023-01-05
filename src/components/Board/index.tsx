@@ -10,10 +10,10 @@ import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import { AddTaskText } from '../CardList/styled';
 import AddIcon from '@mui/icons-material/Add';
 import { ColumHeader } from '../ColumnHeader';
-import { fetchBoard, createColumn, updateColumn } from 'src/services/TrelloService';
+import { fetchBoard, createColumn, updateColumn, updateBoard } from 'src/services/TrelloService';
 
 export const Board = () => {
-  const [board, setBoard] = useState<IBoard | null>();
+  const [board, setBoard] = useState<IBoard | null>(null);
   const [columns, setColumns] = useState<IColumn[]>([]);
   const [columnNameValue, setColumnNameValue] = useState<string>('');
   const [isOpenAddNewColumn, setIsOpenAddNewColumn] = useState<boolean>(false);
@@ -43,7 +43,7 @@ export const Board = () => {
     );
   }
 
-  const onColumnDrop = (dropResult: DropResult) => {
+  const onColumnDrop = async (dropResult: DropResult) => {
     let newColumns = [...columns];
     newColumns = applyDrag(newColumns, dropResult);
 
@@ -51,8 +51,12 @@ export const Board = () => {
     newBoard.columnOrder = newColumns.map((c) => c._id);
     newBoard.columns = newColumns;
 
-    setColumns(newColumns);
-    setBoard(newBoard);
+    if (newBoard.columnOrder && newBoard._id) {
+      setColumns(newColumns);
+      setBoard(newBoard);
+
+      await updateBoard(newBoard._id, { columnOrder: newBoard.columnOrder });
+    }
   };
 
   const onCardDrop = (columnId: string, dropResult: DropResult) => {

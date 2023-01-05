@@ -31,8 +31,9 @@ export const CardList = ({ column, onCardDrop, onAddNewCard }: ICardListProps) =
   };
 
   const onChangeCardName = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    if (e.target.value) {
-      setTxtNewCard(e.target.value);
+    const value = e.target.value;
+    if (value) {
+      setTxtNewCard(value);
     }
   };
 

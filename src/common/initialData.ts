@@ -32,6 +32,12 @@ export interface IColumnPayload {
   title: string;
 }
 
+export interface IUploadBoardPayload {
+  title?: string;
+  columnOrder?: string[];
+  _destroy?: boolean;
+}
+
 export interface IUploadColumnPayload {
   title?: string;
   _destroy?: boolean;
@@ -41,6 +47,11 @@ export interface ICardPayload {
   boardId: string;
   columnId: string;
   title: string;
+}
+
+export interface IUploadCardPayload {
+  title?: string;
+  _destroy?: boolean;
 }
 
 export const initialData: IDataList = {
