@@ -41,6 +41,7 @@ export interface IUploadBoardPayload {
 export interface IUploadColumnPayload {
   title?: string;
   _destroy?: boolean;
+  cardOrder?: string[];
 }
 
 export interface ICardPayload {

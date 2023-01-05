@@ -4,13 +4,13 @@ import { colors } from 'src/common/colors';
 import { CardList } from '..';
 import { IBoard, ICard, IColumn, IColumnPayload } from 'src/common/initialData';
 import { BoardNotFound } from './styled';
-import { isEmpty } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 import { mapOrder, applyDrag, filterDropResult } from 'src/utils';
 import { Container, Draggable, DropResult } from 'react-smooth-dnd';
 import { AddTaskText } from '../CardList/styled';
 import AddIcon from '@mui/icons-material/Add';
 import { ColumHeader } from '../ColumnHeader';
-import { fetchBoard, createColumn, updateColumn, updateBoard } from 'src/services/TrelloService';
+import { fetchBoard, createColumn, updateColumn, updateBoard, updateCard } from 'src/services/TrelloService';
 
 export const Board = () => {
   const [board, setBoard] = useState<IBoard | null>(null);
@@ -44,7 +44,7 @@ export const Board = () => {
   }
 
   const onColumnDrop = async (dropResult: DropResult) => {
-    let newColumns = [...columns];
+    let newColumns = cloneDeep(columns);
     newColumns = applyDrag(newColumns, dropResult);
 
     let newBoard = { ...board };
@@ -55,21 +55,42 @@ export const Board = () => {
       setColumns(newColumns);
       setBoard(newBoard);
 
-      await updateBoard(newBoard._id, { columnOrder: newBoard.columnOrder });
+      await updateBoard(newBoard._id, { columnOrder: newBoard.columnOrder }).catch(() => {
+        setColumns(columns);
+        setBoard(board);
+      });
     }
   };
 
-  const onCardDrop = (columnId: string, dropResult: DropResult) => {
+  const onCardDrop = async (columnId: string, dropResult: DropResult) => {
     if (filterDropResult(dropResult)) {
-      let newColumns = [...columns];
+      let newColumns = cloneDeep(columns);
       let currentColumn = newColumns.find((c) => c._id === columnId);
 
       if (currentColumn) {
         currentColumn.cards = applyDrag(currentColumn.cards, dropResult);
         currentColumn.cardOrder = currentColumn.cards.map((i) => i._id);
-      }
 
-      setColumns(newColumns);
+        setColumns(newColumns);
+
+        if (dropResult.removedIndex !== null && dropResult.addedIndex !== null) {
+          //move card inside owner column
+          await updateColumn(currentColumn._id, { cardOrder: currentColumn.cardOrder }).catch(() =>
+            setColumns(columns),
+          );
+        } else {
+          //move card to other column
+          await updateColumn(currentColumn._id, { cardOrder: currentColumn.cardOrder }).catch(() =>
+            setColumns(columns),
+          );
+          if (dropResult.addedIndex !== null) {
+            let currentCard = cloneDeep(dropResult.payload);
+            currentCard.columnId = currentColumn._id;
+
+            await updateCard(currentCard._id, currentCard);
+          }
+        }
+      }
     }
   };
 
